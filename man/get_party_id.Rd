@@ -11,7 +11,7 @@ get_party_id(states = NULL)
 Brazil. If nothing is inputed then will select all states}
 }
 \value{
-A dataframe containing the ID and information of the Parites
+A dataframe containing the ID and information of the Parties
 }
 \description{
 Get the ID of all the Parties of the Brazil or a specific state

@@ -15,7 +15,7 @@
 #' }
 get_party_members <- function(id_orgao_partidario) {
   # Input validation
-  if (!is.numeric(id_orgao_partidario) || length(id_orgao_partidario) != 1) {
+  if (!is.character(id_orgao_partidario) || length(id_orgao_partidario) != 1) {
     stop("The parameter 'id_orgao_partidario' must be a single integer.")
   }
 
