@@ -3,7 +3,7 @@
 #' @param states A character vector containing the abbreviation of the states of
 #' Brazil. If nothing is inputed then will select all states
 #'
-#' @returns A dataframe containing the ID and information of the Parites
+#' @returns A dataframe containing the ID and information of the Parties
 #' @export
 #'
 #' @examples
