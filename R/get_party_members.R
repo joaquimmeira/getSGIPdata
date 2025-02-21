@@ -8,15 +8,20 @@
 #' @return A tibble containing the members of the party organization.
 #' @export
 #'
+#' @importFrom stringr str_glue
+#' @importFrom jsonlite read_json
+#' @importFrom dplyr tibble
+#' @importFrom tidyr unnest_wider
+#'
 #' @examples
 #' \dontrun{
-#'   members <- get_party_members(12345)
+#'   members <- get_party_members('12345')
 #'   print(members)
 #' }
 get_party_members <- function(id_orgao_partidario) {
   # Input validation
   if (!is.character(id_orgao_partidario) || length(id_orgao_partidario) != 1) {
-    stop("The parameter 'id_orgao_partidario' must be a single integer.")
+    stop("The parameter 'id_orgao_partidario' must be a  numeric character (integer)")
   }
 
   # Build the URL

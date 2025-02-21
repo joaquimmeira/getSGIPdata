@@ -18,7 +18,7 @@ identified by \code{id_orgao_partidario}, and returns the data as a tibble.
 }
 \examples{
 \dontrun{
-  members <- get_party_members(12345)
+  members <- get_party_members('12345')
   print(members)
 }
 }
