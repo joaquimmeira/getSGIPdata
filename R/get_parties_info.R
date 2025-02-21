@@ -40,35 +40,10 @@ get_parties_info <- function(states = NULL, ivigencia = NULL, fvigencia = NULL){
       stop("You insert a date before 01/01/1900, you can only insert dates after 01/01/1900")
     }
 
-    year_inicio_vigencia <- lubridate::year(inicio_vigencia)
-    day_inicio_vigencia <- lubridate::day(inicio_vigencia)
-    month_inicio_vigencia <- lubridate::month(inicio_vigencia)
-
-    # Correction for days below 10
-    if(day_inicio_vigencia < 10){
-      day_inicio_vigencia <- stringr::str_glue("0{day_inicio_vigencia}")
-    }
-    # Correction for months below 10
-    if(month_inicio_vigencia < 10){
-      month_inicio_vigencia <- stringr::str_glue("0{month_inicio_vigencia}")
-    }
   } else{
     # In case inicio_vigencia is NULL, the date for inicio_vigencia is setted as
     # the date of the system
     inicio_vigencia <- Sys.Date()
-
-    year_inicio_vigencia <- lubridate::year(inicio_vigencia)
-    day_inicio_vigencia <- lubridate::day(inicio_vigencia)
-    month_inicio_vigencia <- lubridate::month(inicio_vigencia)
-
-    # Correction for days below 10
-    if(day_inicio_vigencia < 10){
-      day_inicio_vigencia <- stringr::str_glue("0{day_inicio_vigencia}")
-    }
-    # Correction for months below 10
-    if(month_inicio_vigencia < 10){
-      month_inicio_vigencia <- stringr::str_glue("0{month_inicio_vigencia}")
-    }
   }
 
   if(!is.null(fvigencia)){
@@ -84,19 +59,6 @@ get_parties_info <- function(states = NULL, ivigencia = NULL, fvigencia = NULL){
       stop("You insert a date for fim_vigencia that is after the today, you can only insert before today")
     }
 
-    year_fim_vigencia <- lubridate::year(fim_vigencia)
-    day_fim_vigencia <- lubridate::day(fim_vigencia)
-    month_fim_vigencia <- lubridate::month(fim_vigencia)
-
-    # Correction for days below 10
-    if(day_fim_vigencia < 10){
-      day_fim_vigencia <- stringr::str_glue("0{day_fim_vigencia}")
-    }
-    # Correction for months below 10
-    if(month_fim_vigencia < 10){
-      month_fim_vigencia <- stringr::str_glue("0{month_fim_vigencia}")
-    }
-
     # Check if inicio_vigencia is after fim_vigencia
     if(difftime(fim_vigencia,inicio_vigencia) < 0){
       stop("You insert a date for 'inicio_vigencia' that is before 'fim_vigencia'")
@@ -107,25 +69,13 @@ get_parties_info <- function(states = NULL, ivigencia = NULL, fvigencia = NULL){
     # the date of the system
     fim_vigencia <- Sys.Date()
 
-    year_fim_vigencia <- lubridate::year(fim_vigencia)
-    day_fim_vigencia <- lubridate::day(fim_vigencia)
-    month_fim_vigencia <- lubridate::month(fim_vigencia)
-
-    # Correction for days below 10
-    if(day_fim_vigencia < 10){
-      day_fim_vigencia <- stringr::str_glue("0{day_fim_vigencia}")
-    }
-    # Correction for months below 10
-    if(month_fim_vigencia < 10){
-      month_fim_vigencia <- stringr::str_glue("0{month_fim_vigencia}")
-    }
-
     # Check if inicio_vigencia is after fim_vigencia
     if(difftime(fim_vigencia,inicio_vigencia) < 0){
       stop("You insert a date for 'inicio_vigencia' that is before 'fim_vigencia'")
     }
   }
-
+  inicio_vigencia <- format(inicio_vigencia, "%d/%m/%Y")
+  fim_vigencia <- format(fim_vigencia, "%d/%m/%Y")
 
   # Define the valid state abbreviations
   valid_states <- c("AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES",
@@ -148,31 +98,51 @@ get_parties_info <- function(states = NULL, ivigencia = NULL, fvigencia = NULL){
     states <- valid_states
   }
 
-  # Generate API URLs
-  state_parties <- stringr::str_glue(
-    'https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta?dataFimVigencia={day_fim_vigencia}%2F{month_fim_vigencia}%2F{year_fim_vigencia}&dataInicioVigencia={day_inicio_vigencia}%2F{month_inicio_vigencia}%2F{year_inicio_vigencia}&isComposicoesHistoricas=true&nrZona=0&sgUe=&sgUeSuperior={states}&sqPartido=0&tpAbrangencia=83'
-  )
 
-  if ("DF" %in% states) {
-    state_parties <- stringr::str_subset(state_parties, "DF", negate = TRUE) |>
-      append(
-        stringr::str_glue("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta?dataFimVigencia={day_fim_vigencia}%2F{month_fim_vigencia}%2F{year_fim_vigencia}&dataInicioVigencia={day_inicio_vigencia}%2F{month_inicio_vigencia}%2F{year_inicio_vigencia}&isComposicoesHistoricas=false&nrZona=0&sgUe=&sqPartido=0&tpAbrangencia=84")
-      )
-  }
 
   # Extracting the id of the parties
-  info_parties <- state_parties |>
-    purrr::map_df(
-      ~{
-        # Run the iteration in aleatory timing
-        Sys.sleep(runif(1, 1, 3))
+  info_parties <- purrr::map_df(states,
+                                ~{
 
-        .x |>
-          jsonlite::read_json() |>
-          dplyr::tibble(data = _) |>
-          tidyr::unnest_wider(data)
-      }
-    )
+                                  Sys.sleep(runif(1, 1, 3))
+
+                                  # Criar a requisição
+                                  ifelse(.x == "DF",
+                                         # Request for DF parties
+                                         req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
+                                           req_url_query(
+                                             dataFimVigencia = fim_vigencia,
+                                             dataInicioVigencia = inicio_vigencia,
+                                             isComposicoesHistoricas = "false",
+                                             nrZona = "0",
+                                             sgUe = "",
+                                             sqPartido = "0",
+                                             tpAbrangencia = "84"
+                                           ),
+                                         # Resques for all states of Brasil
+                                         req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
+                                           req_url_query(
+                                             dataFimVigencia = fim_vigencia,
+                                             dataInicioVigencia = inicio_vigencia,
+                                             isComposicoesHistoricas = "false",
+                                             nrZona = "0",
+                                             sgUe = "",
+                                             sgUeSuperior = .x,
+                                             sqPartido = "0",
+                                             tpAbrangencia = "83"
+                                           )
+                                  )
+                                  # Enviar a requisição e obter a resposta
+                                  resp <- req_perform(req)
+
+                                  # Ver o conteúdo da resposta
+                                  info_parties <- resp_body_json(resp) |>
+                                    tibble::tibble() |>
+                                    tidyr::unnest_wider(dplyr::everything())
+
+                                  return(info_parties)
+                                }
+  )
 
   return(info_parties)
 }
