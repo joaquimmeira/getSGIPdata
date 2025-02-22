@@ -44,8 +44,8 @@ get_parties_info <- function(states = NULL,
                                 is_start = FALSE,
                                 inicio_vigencia)
 
-  states <- validate_states(states)
-  parties_info <- fetch_parties_info(states,
+  states <- .validate_states(states)
+  parties_info <- .fetch_parties_info(states,
                                      inicio_vigencia,
                                      fim_vigencia)
   return(parties_info)
