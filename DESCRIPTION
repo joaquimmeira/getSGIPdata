@@ -5,8 +5,7 @@ Authors@R:
     Authors@R: c(
     person("Adelino", "Martins", email = "adelino.developer@gmail.com", role = c("aut", "cre")),
     person("Samuel", "Rodrigues", email = "sam.baraque@gmail.com", role = "aut"),
-    person("Baruque", "Rodrigues", email = "quemuel.baruque@ufpe.br", role = "aut")
-)
+    person("Baruque", "Rodrigues", email = "quemuel.baruque@ufpe.br", role = "aut"))
 Description: A package to retrieve and process political party data from the SGIP API.
 License: MIT + file LICENSE
 Encoding: UTF-8
