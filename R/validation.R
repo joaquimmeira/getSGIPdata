@@ -40,6 +40,8 @@
   return(format(parsed_date, "%d/%m/%Y"))
 }
 
+
+
 #' Validate state abbreviations (Internal)
 #'
 #' This function checks whether the provided state abbreviations are valid Brazilian states.
@@ -73,4 +75,28 @@
     states <- valid_states
   }
   return(states)
+}
+
+#' Validate party organization ID (Internal)
+#'
+#' Ensures that the input is a character vector and checks for validity.
+#'
+#' @param id_orgao_partidario Character vector representing the party organization ID.
+#' @return Validated character vector of party organization IDs.
+#' @keywords internal
+.validate_id_orgao_partidario <- function(id_orgao_partidario) {
+  if (is.null(id_orgao_partidario)) {
+    return(parties_id$sqOrgaoPartidario)
+  }
+
+  if (!is.character(id_orgao_partidario)) {
+    stop("The parameter 'id_orgao_partidario' must be a character vector.")
+  }
+
+  invalid_id <- setdiff(id_orgao_partidario, parties_id$sqOrgaoPartidario)
+  if (length(invalid_id) > 0) {
+    stop(stringr::str_glue("{paste(invalid_id, collapse = ', ')} isn't a valid id_orgao_partidario"))
+  }
+
+  return(id_orgao_partidario)
 }

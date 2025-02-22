@@ -15,56 +15,67 @@
 #'   print(members)
 #' }
 get_party_members <- function(id_orgao_partidario = NULL) {
+  id_orgao_partidario <- .validate_id_orgao_partidario(id_orgao_partidario)
+  members_list <- purrr::map_df(id_orgao_partidario, .fetch_party_members)
+  return(members_list)
+}
 
-  if(is.null(id_orgao_partidario)){
-    id_orgao_partidario <- parties_id$sqOrgaoPartidario
-  } else{
 
-    # Input validation
-    if (!is.character(id_orgao_partidario)) {
-      stop("The parameter 'id_orgao_partidario' must be a character vector.")
-    } else{
-      # Check if id_orgao_partidario is valid
-      if(!all(id_orgao_partidario %in% parties_id$sqOrgaoPartidario)){
-        invalid_id <- setdiff(id_orgao_partidario, parties_id$sqOrgaoPartidario)
-        stop(stringr::str_glue("{paste(invalid_id, collapse = ', ')} isn't a valid id_orgao_partidario"))
-      }
+#' Fetch party members from API (Internal)
+#'
+#' Retrieves party members based on the given party ID.
+#'
+#' @param party_id Character representing the party ID.
+#' @return A tibble with party members.
+#' @keywords internal
+.fetch_party_members <- function(party_id) {
+  Sys.sleep(runif(1, 1, 3))
 
-    }
+  response <- .request_party_data(party_id)
 
+  if (!"membros" %in% names(response)) {
+    stop("The API response does not contain the 'membros' key.")
   }
-  members_list <- purrr::map_df(
-    id_orgao_partidario,
-    ~ {
 
-      Sys.sleep(runif(1, 1, 3))
+  members <- .parse_members(response, party_id)
+  members |> dplyr::glimpse()
 
-      # Build the URL
-      req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/comAnotacoesEMembros") |>
-        req_url_query(idOrgaoPartidario = .x)
+  return(members)
+}
 
-      response <- httr2::req_perform(req) |> httr2::resp_body_json()
+#' Request party data from API (Internal)
+#'
+#' Sends a request to the API to retrieve party data.
+#'
+#' @param party_id Character representing the party ID.
+#' @return A list containing the API response.
+#' @keywords internal
+.request_party_data <- function(party_id) {
+  req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/comAnotacoesEMembros") |>
+    req_url_query(idOrgaoPartidario = party_id)
 
-      # Check if the response contains the 'membros' key
-      if (!"membros" %in% names(response)) {
-        stop("The API response does not contain the 'membros' key.")
-      }
+  response <- httr2::req_perform(req) |> httr2::resp_body_json()
+  return(response)
+}
 
-      # Convert the list of members into a tibble and unnest the columns
-      members <- response$membros |>
-        tibble::tibble() |>
-        tidyr::unnest_wider(dplyr::everything()) |>
-        dplyr::mutate(
-          party_id = .x,
-          sigla = resp$anotacaoOrgaoPartidarioInfo[[1]]$sigla,
-          uf = resp$anotacaoOrgaoPartidarioInfo[[1]]$uf,
-          municipio = resp$anotacaoOrgaoPartidarioInfo[[1]]$municipio
-        )
+#' Parse API response into tibble (Internal)
+#'
+#' Converts the API response into a structured tibble.
+#'
+#' @param response List containing the API response.
+#' @param party_id Character representing the party ID.
+#' @return A tibble containing the parsed party members.
+#' @keywords internal
+.parse_members <- function(response, party_id) {
+  members <- response$membros |>
+    tibble::tibble() |>
+    tidyr::unnest_wider(dplyr::everything()) |>
+    dplyr::mutate(
+      party_id = party_id,
+      sigla = response$anotacaoOrgaoPartidarioInfo[[1]]$sigla,
+      uf = response$anotacaoOrgaoPartidarioInfo[[1]]$uf,
+      municipio = response$anotacaoOrgaoPartidarioInfo[[1]]$municipio
+    )
 
-
-      members |> dplyr::glimpse()
-
-      return(members)
-    }
-  )
+  return(members)
 }
