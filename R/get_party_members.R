@@ -55,7 +55,10 @@ get_party_members <- function(id_orgao_partidario = NULL) {
         tibble::tibble() |>
         tidyr::unnest_wider(dplyr::everything()) |>
         dplyr::mutate(
-          party_id = .x
+          party_id = .x,
+          sigla = resp$anotacaoOrgaoPartidarioInfo[[1]]$sigla,
+          uf = resp$anotacaoOrgaoPartidarioInfo[[1]]$uf,
+          municipio = resp$anotacaoOrgaoPartidarioInfo[[1]]$municipio
         )
 
 
