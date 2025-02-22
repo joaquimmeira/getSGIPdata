@@ -4,10 +4,11 @@
 \alias{get_party_members}
 \title{Get party members from a specific party organization}
 \usage{
-get_party_members(id_orgao_partidario)
+get_party_members(id_orgao_partidario = NULL)
 }
 \arguments{
-\item{id_orgao_partidario}{An integer representing the ID of the party organization.}
+\item{id_orgao_partidario}{An integer representing the ID of the party organization.
+If nothing is provided, it will run for all parties in Brazil at municipality level.}
 }
 \value{
 A tibble containing the members of the party organization.
