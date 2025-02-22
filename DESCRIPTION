@@ -2,7 +2,11 @@ Package: getSGIPdata
 Title: Retrieve and Process Data from SGIP API
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
+    Authors@R: c(
+    person("Adelino", "Martins", email = "adelino.developer@gmail.com", role = c("aut", "cre")),
+    person("Samuel", "Rodrigues", email = "sam.baraque@gmail.com", role = "aut"),
+    person("Baruque", "Rodrigues", email = "quemuel.baruque@ufpe.br", role = "aut")
+)
 Description: A package to retrieve and process political party data from the SGIP API.
 License: MIT + file LICENSE
 Encoding: UTF-8
