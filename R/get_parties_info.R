@@ -31,62 +31,40 @@
 #'  )
 #'
 #' }
-get_parties_info <- function(states = NULL, ivigencia = NULL, fvigencia = NULL){
+get_parties_info <- function(states = NULL,
+                             ivigencia = NULL,
+                             fvigencia = NULL) {
 
-  if(!is.null(ivigencia)){
-    inicio_vigencia <- lubridate::dmy(ivigencia)
-    if(is.na(inicio_vigencia)){
-      stop(stringr::str_glue("Invalid date format: {ivigencia}. Use 'dd/mm/yyyy'."))
-    }
-    if(difftime(inicio_vigencia, as.Date("1900-01-01")) < 0){
-      stop("You inserted a date before 01/01/1900, only dates after 01/01/1900 are allowed")
-    }
-  } else{
-    inicio_vigencia <- Sys.Date()
-  }
+  inicio_vigencia <- .validate_date(ivigencia,
+                                   default = Sys.Date(),
+                                   is_start = TRUE)
 
-  if(!is.null(fvigencia)){
-    fim_vigencia <- lubridate::dmy(fvigencia)
-    if(is.na(fim_vigencia)){
-      stop(stringr::str_glue("Invalid date format: {fvigencia}. Use 'dd/mm/yyyy'."))
-    }
-    if(difftime(Sys.Date(), fim_vigencia) < 0){
-      stop("You inserted a date for fim_vigencia that is after today, only past dates are allowed")
-    }
-    if(difftime(fim_vigencia, inicio_vigencia) < 0){
-      stop("inicio_vigencia must be before fim_vigencia")
-    }
-  } else{
-    fim_vigencia <- Sys.Date()
-    if(difftime(fim_vigencia, inicio_vigencia) < 0){
-      stop("inicio_vigencia must be before fim_vigencia")
-    }
-  }
+  fim_vigencia <- .validate_date(fvigencia,
+                                default = Sys.Date(),
+                                is_start = FALSE,
+                                inicio_vigencia)
 
-  inicio_vigencia <- format(inicio_vigencia, "%d/%m/%Y")
-  fim_vigencia <- format(fim_vigencia, "%d/%m/%Y")
+  states <- validate_states(states)
+  parties_info <- fetch_parties_info(states,
+                                     inicio_vigencia,
+                                     fim_vigencia)
+  return(parties_info)
+}
 
-  valid_states <- c("AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES",
-                    "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR",
-                    "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC",
-                    "SP", "SE", "TO")
-
-  if (!is.null(states)) {
-    if (!is.character(states)) {
-      stop("States must be a character vector")
-    }
-    states <- toupper(states)
-    invalid_states <- states[!states %in% valid_states]
-    if (length(invalid_states) > 0) {
-      stop(glue::glue("Invalid state(s): {paste(invalid_states, collapse = ', ')}"))
-    }
-  } else {
-    warning("You selected all states")
-    states <- valid_states
-  }
-
-  info_parties <- purrr::map_df(states, ~{
-    Sys.sleep(runif(1, 1, 3))
+#' Fetch party information from the API (Internal)
+#'
+#' This function retrieves party information from the TSE API
+#' based on the given states and validity dates.
+#'
+#' @param states A character vector with state abbreviations.
+#' @param inicio_vigencia A string in "dd/mm/yyyy" format representing the start date.
+#' @param fim_vigencia A string in "dd/mm/yyyy" format representing the end date.
+#'
+#' @return A dataframe with party information.
+#' @keywords internal
+.fetch_parties_info <- function(states, inicio_vigencia, fim_vigencia) {
+  purrr::map_df(states, ~{
+    Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
 
     req <- httr2::request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
       httr2::req_url_query(
@@ -106,6 +84,4 @@ get_parties_info <- function(states = NULL, ivigencia = NULL, fvigencia = NULL){
 
     return(info_parties)
   })
-
-  return(info_parties)
 }
