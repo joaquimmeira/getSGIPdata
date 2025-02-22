@@ -4,6 +4,7 @@
 #' identified by `id_orgao_partidario`, and returns the data as a tibble.
 #'
 #' @param id_orgao_partidario An integer representing the ID of the party organization.
+#' If nothing is provided, it will run for all parties in Brazil at municipality level.
 #'
 #' @return A tibble containing the members of the party organization.
 #' @export
@@ -13,10 +14,24 @@
 #'   members <- get_party_members(12345)
 #'   print(members)
 #' }
-get_party_members <- function(id_orgao_partidario) {
-  # Input validation
-  if (!is.character(id_orgao_partidario)) {
-    stop("The parameter 'id_orgao_partidario' must be a character vector.")
+get_party_members <- function(id_orgao_partidario = NULL) {
+
+  if(is.null(id_orgao_partidario)){
+    id_orgao_partidario <- parties_id$sqOrgaoPartidario
+  } else{
+
+    # Input validation
+    if (!is.character(id_orgao_partidario)) {
+      stop("The parameter 'id_orgao_partidario' must be a character vector.")
+    } else{
+      # Check if id_orgao_partidario is valid
+      if(!all(id_orgao_partidario %in% parties_id$sqOrgaoPartidario)){
+        invalid_id <- setdiff(id_orgao_partidario, parties_id$sqOrgaoPartidario)
+        stop(stringr::str_glue("{paste(invalid_id, collapse = ', ')} isn't a valid id_orgao_partidario"))
+      }
+
+    }
+
   }
   members_list <- purrr::map_df(
     id_orgao_partidario,
