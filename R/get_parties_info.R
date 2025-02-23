@@ -95,7 +95,12 @@ get_parties_info <- function(states = NULL,
     resp <- httr2::req_perform(req)
     info_parties <- httr2::resp_body_json(resp) |>
       tibble::tibble() |>
-      tidyr::unnest_wider(dplyr::everything())
+      tidyr::unnest_wider(dplyr::everything()) |>
+      dplyr::rename("id_orgao_partidario" = sqOrgaoPartidario) |>
+      dplyr::mutate(
+        id_orgao_partidario = as.character(id_orgao_partidario),
+        numero = as.character(numero)
+        )
 
     return(info_parties)
   })
