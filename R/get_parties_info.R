@@ -66,16 +66,31 @@ get_parties_info <- function(states = NULL,
   purrr::map_df(states, ~{
     Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
 
-    req <- httr2::request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
-      httr2::req_url_query(
-        dataFimVigencia = fim_vigencia,
-        dataInicioVigencia = inicio_vigencia,
-        isComposicoesHistoricas = "false",
-        nrZona = "0",
-        sgUe = ifelse(.x == "DF", "", .x),
-        sqPartido = "0",
-        tpAbrangencia = ifelse(.x == "DF", "84", "83")
-      )
+    ifelse(.x == "DF",
+       # Request for DF parties
+       req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
+         req_url_query(
+           dataFimVigencia = fim_vigencia,
+           dataInicioVigencia = inicio_vigencia,
+           isComposicoesHistoricas = "false",
+           nrZona = "0",
+           sgUe = "",
+           sqPartido = "0",
+           tpAbrangencia = "84"
+         ),
+       # Resques for all states of Brasil
+       req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
+         req_url_query(
+           dataFimVigencia = fim_vigencia,
+           dataInicioVigencia = inicio_vigencia,
+           isComposicoesHistoricas = "false",
+           nrZona = "0",
+           sgUe = "",
+           sgUeSuperior = .x,
+           sqPartido = "0",
+           tpAbrangencia = "83"
+         )
+)
 
     resp <- httr2::req_perform(req)
     info_parties <- httr2::resp_body_json(resp) |>
