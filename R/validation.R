@@ -84,20 +84,29 @@
 #' @param id_orgao_partidario Character vector representing the party organization ID.
 #' @return Validated character vector of party organization IDs.
 #' @keywords internal
+#' @importFrom utils data
+
 .validate_id_orgao_partidario <- function(id_orgao_partidario) {
-  if (is.null(id_orgao_partidario)) {
-    load(system.file("data", "parties_id.rda", package = "getSGIPdata"))
+  parties_id <- get("parties_id", envir = asNamespace("getSGIPdata"))
+
+  # If the parameter is NULL or an empty vector, return all IDs
+  if (is.null(id_orgao_partidario) || length(id_orgao_partidario) == 0) {
     return(parties_id$sqOrgaoPartidario)
   }
 
+  # Check if the parameter is a character vector
   if (!is.character(id_orgao_partidario)) {
     stop("The parameter 'id_orgao_partidario' must be a character vector.")
   }
 
+  # Find invalid IDs
   invalid_id <- setdiff(id_orgao_partidario, parties_id$sqOrgaoPartidario)
+
+  # If there are invalid IDs, generate an error message
   if (length(invalid_id) > 0) {
-    stop(stringr::str_glue("{paste(invalid_id, collapse = ', ')} isn't a valid id_orgao_partidario"))
+    stop(paste("The following are not valid 'id_orgao_partidario':", paste(invalid_id, collapse = ", ")))
   }
 
+  # Return the validated vector of IDs
   return(id_orgao_partidario)
 }
