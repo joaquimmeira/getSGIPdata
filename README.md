@@ -51,7 +51,7 @@ A função `get_party_members()` retorna os membros de um determinado partido.
 #### Exemplo de uso:
 
 ```r
-members <- get_party_members(447881)
+members <- get_party_members("447881")
 print(members)
 ```
 
@@ -61,23 +61,31 @@ print(members)
 
 ## Funções internas
 
-O pacote inclui funções internas para validação:
+O pacote inclui funções internas para validação e obtenção de dados:
 
-- `.validate_date()`: Valida e formata datas.
-- `.validate_states()`: Verifica se os estados informados são válidos.
+- `.validate_date()`: Valida e formata datas, garantindo que estejam no formato "dd/mm/yyyy" e dentro dos limites permitidos.
+- `.validate_states()`: Verifica se as siglas dos estados informados são válidas. Caso contrário, gera um erro. Se `NULL` for fornecido, retorna todas as siglas válidas com um aviso.
+- `.validate_id_orgao_partidario()`: Valida o ID de uma organização partidária, verificando se é válido com base em uma lista predefinida.
+- `.fetch_parties_info()`: Obtém informações de partidos políticos da API do TSE, com base nos estados e nas datas fornecidas.
+- `.fetch_party_members()`: Obtém os membros de um partido político a partir da API do TSE, usando o ID do partido.
+- `.request_party_data()`: Envia uma solicitação à API do TSE para obter dados sobre um partido específico, dado seu ID.
+- `.parse_members()`: Converte a resposta da API sobre membros de um partido em um tibble estruturado, incluindo detalhes como sigla, UF e município.
+
 
 ## Dependências
 
 O pacote depende das seguintes bibliotecas:
 
-- `httr2`
-- `purrr`
 - `lubridate`
+- `magrittr`
 - `stringr`
-- `tibble`
-- `tidyr`
-- `dplyr`
+- `purrr`
+- `httr2`
 - `glue`
+- `tibble`
+- `dplyr`
+- `tidyr`
+
 
 ## Licença
 
