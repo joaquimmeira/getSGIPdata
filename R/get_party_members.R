@@ -28,6 +28,7 @@ get_party_members <- function(id_orgao_partidario = NULL) {
 #' @param party_id Character representing the party ID.
 #' @return A tibble with party members.
 #' @keywords internal
+#' @importFrom stats runif
 .fetch_party_members <- function(party_id) {
   Sys.sleep(runif(1, 1, 3))
 

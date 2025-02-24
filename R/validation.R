@@ -86,6 +86,7 @@
 #' @keywords internal
 .validate_id_orgao_partidario <- function(id_orgao_partidario) {
   if (is.null(id_orgao_partidario)) {
+    load(system.file("data", "parties_id.rda", package = "getSGIPdata"))
     return(parties_id$sqOrgaoPartidario)
   }
 
