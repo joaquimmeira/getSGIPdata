@@ -3,7 +3,7 @@
 #' This function makes a request to the SGIP API to retrieve members of a party organization,
 #' identified by `id_orgao_partidario`, and returns the data as a tibble.
 #'
-#' @param id_orgao_partidario An integer representing the ID of the party organization.
+#' @param id_orgao_partidario Character representing the ID of the party organization.
 #' If nothing is provided, it will run for all parties in Brazil at municipality level.
 #'
 #' @return A tibble containing the members of the party organization.
@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'   members <- get_party_members(12345)
+#'   members <- get_party_members("447881")
 #'   print(members)
 #' }
 get_party_members <- function(id_orgao_partidario = NULL) {

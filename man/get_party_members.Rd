@@ -7,7 +7,7 @@
 get_party_members(id_orgao_partidario = NULL)
 }
 \arguments{
-\item{id_orgao_partidario}{An integer representing the ID of the party organization.
+\item{id_orgao_partidario}{Character representing the ID of the party organization.
 If nothing is provided, it will run for all parties in Brazil at municipality level.}
 }
 \value{
@@ -19,7 +19,7 @@ identified by \code{id_orgao_partidario}, and returns the data as a tibble.
 }
 \examples{
 \dontrun{
-  members <- get_party_members(12345)
+  members <- get_party_members("447881")
   print(members)
 }
 }
