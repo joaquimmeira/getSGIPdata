@@ -6,6 +6,6 @@ test_that("Function throws error for non-character input", {
 })
 
 test_that("Function throws error for invalid party ID", {
-  expect_error(get_party_members("99999"), "99999 isn't a valid id_orgao_partidario")
+  expect_error(get_party_members("99999"), "The following are not valid 'id_orgao_partidario': 99999")
 })
 
