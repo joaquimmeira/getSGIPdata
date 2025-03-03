@@ -72,7 +72,7 @@ get_parties_info <- function(states = NULL,
          req_url_query(
            dataFimVigencia = fim_vigencia,
            dataInicioVigencia = inicio_vigencia,
-           isComposicoesHistoricas = "false",
+           isComposicoesHistoricas = "true",
            nrZona = "0",
            sgUe = "",
            sqPartido = "0",
@@ -83,12 +83,12 @@ get_parties_info <- function(states = NULL,
          req_url_query(
            dataFimVigencia = fim_vigencia,
            dataInicioVigencia = inicio_vigencia,
-           isComposicoesHistoricas = "false",
+           isComposicoesHistoricas = "true",
            nrZona = "0",
            sgUe = "",
            sgUeSuperior = .x,
            sqPartido = "0",
-           tpAbrangencia = "83"
+           tpAbrangencia = "82"
          )
 )
 
