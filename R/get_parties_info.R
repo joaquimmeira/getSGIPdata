@@ -86,7 +86,7 @@ get_parties_info <- function(states = NULL,
            isComposicoesHistoricas = "true",
            nrZona = "0",
            sgUe = "",
-           sgUeSuperior = .x,
+        #  sgUeSuperior = .x,
            sqPartido = "0",
            tpAbrangencia = "82"
          )
