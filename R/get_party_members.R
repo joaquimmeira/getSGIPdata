@@ -14,8 +14,10 @@
 #'   members <- get_party_members("447881")
 #'   print(members)
 #' }
-get_party_members <- function(id_orgao_partidario = NULL) {
-  id_orgao_partidario <- .validate_id_orgao_partidario(id_orgao_partidario)
+get_party_members <- function(id_orgao_partidario = NULL, validate = FALSE) {
+  if(validate == T) {
+    id_orgao_partidario <- .validate_id_orgao_partidario(id_orgao_partidario)
+    }
   members_list <- purrr::map_df(id_orgao_partidario, .fetch_party_members)
   return(members_list)
 }
