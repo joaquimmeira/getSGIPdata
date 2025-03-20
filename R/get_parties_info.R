@@ -31,7 +31,8 @@
 #'  )
 #'
 #' }
-get_parties_info <- function(states = NULL,
+get_parties_info <- function(level = "F",
+                             states = NULL,
                              ivigencia = NULL,
                              fvigencia = NULL) {
 
@@ -63,6 +64,31 @@ get_parties_info <- function(states = NULL,
 #' @return A dataframe with party information.
 #' @keywords internal
 .fetch_parties_info <- function(states, inicio_vigencia, fim_vigencia) {
+  if(level == "F") {
+  req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
+         req_url_query(
+           dataFimVigencia = fim_vigencia,
+           dataInicioVigencia = inicio_vigencia,
+           isComposicoesHistoricas = "true",
+           nrZona = "0",
+           sgUe = "",
+           sqPartido = "0",
+           tpAbrangencia = "81"
+         )
+
+    resp <- httr2::req_perform(req)
+    info_parties <- httr2::resp_body_json(resp) |>
+      tibble::tibble() |>
+      tidyr::unnest_wider(dplyr::everything()) |>
+      dplyr::rename("id_orgao_partidario" = sqOrgaoPartidario) |>
+      dplyr::mutate(
+        id_orgao_partidario = as.character(id_orgao_partidario),
+        numero = as.character(numero)
+        )
+
+    return(info_parties)
+  }
+  if(level == "E") {
   purrr::map_df(states, ~{
     Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
 
@@ -91,6 +117,7 @@ get_parties_info <- function(states = NULL,
            tpAbrangencia = "82"
          )
 )
+    
 
     resp <- httr2::req_perform(req)
     info_parties <- httr2::resp_body_json(resp) |>
@@ -104,4 +131,36 @@ get_parties_info <- function(states = NULL,
 
     return(info_parties)
   })
+    }
+  if(level == "M") {
+  purrr::map_df(states, ~{
+    Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
+
+       # Resques for all states of Brasil
+       req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
+         req_url_query(
+           dataFimVigencia = fim_vigencia,
+           dataInicioVigencia = inicio_vigencia,
+           isComposicoesHistoricas = "true",
+           nrZona = "0",
+           sgUe = "0",
+           sgUeSuperior = .x,
+           sqPartido = "0",
+           tpAbrangencia = "83"
+         )
+    
+
+    resp <- httr2::req_perform(req)
+    info_parties <- httr2::resp_body_json(resp) |>
+      tibble::tibble() |>
+      tidyr::unnest_wider(dplyr::everything()) |>
+      dplyr::rename("id_orgao_partidario" = sqOrgaoPartidario) |>
+      dplyr::mutate(
+        id_orgao_partidario = as.character(id_orgao_partidario),
+        numero = as.character(numero)
+        )
+
+    return(info_parties)
+  })
+    }
 }
