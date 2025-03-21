@@ -153,14 +153,14 @@ get_parties_info <- function(level = NULL,
            tpAbrangencia = "83"
          )
     
-
+    sqOrgaoPartidario <- NA_character_
+    
     resp <- httr2::req_perform(req)
     info_parties <- httr2::resp_body_json(resp) |>
       tibble::tibble() |>
       tidyr::unnest_wider(dplyr::everything()) |>
-      dplyr::rename("id_orgao_partidario" = sqOrgaoPartidario) |>
       dplyr::mutate(
-        id_orgao_partidario = as.character(id_orgao_partidario),
+        id_orgao_partidario = as.character(sqOrgaoPartidario),
         numero = as.character(numero)
         )
 
