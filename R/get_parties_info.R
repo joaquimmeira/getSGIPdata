@@ -137,7 +137,7 @@ get_parties_info <- function(level = NULL,
   })
   }
   if("M" %in% level) {
-  purrr::map_df(states, ~{
+  purrr::map_df(states[states != "DF"], ~{
     Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
 
        # Resques for all states of Brasil
@@ -153,14 +153,13 @@ get_parties_info <- function(level = NULL,
            tpAbrangencia = "83"
          )
     
-    sqOrgaoPartidario <- NA_character_
-    
     resp <- httr2::req_perform(req)
     info_parties <- httr2::resp_body_json(resp) |>
       tibble::tibble() |>
       tidyr::unnest_wider(dplyr::everything()) |>
+      dplyr::rename("id_orgao_partidario" = sqOrgaoPartidario) |>
       dplyr::mutate(
-        id_orgao_partidario = as.character(sqOrgaoPartidario),
+        id_orgao_partidario = as.character(id_orgao_partidario),
         numero = as.character(numero)
         )
 
