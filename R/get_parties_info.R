@@ -45,12 +45,13 @@ get_parties_info <- function(level = NULL,
                                 is_start = FALSE,
                                 inicio_vigencia)
 
-  level <- ifelse(!level %in% c("F", "E", "M"), "F", level)
+  level <- ifelse(!(level %in% c("F", "E", "M")), "F", level)
 
   states <- .validate_states(states)
-  parties_info <- .fetch_parties_info(states,
-                                     inicio_vigencia,
-                                     fim_vigencia)
+  parties_info <- .fetch_parties_info(level,
+                                      states,
+                                      inicio_vigencia,
+                                      fim_vigencia)
   return(parties_info)
 }
 
