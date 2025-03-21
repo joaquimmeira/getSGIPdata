@@ -89,6 +89,8 @@ get_parties_info <- function(level = NULL,
         numero = as.character(numero)
         )
 
+    return(info_parties)
+
   }
   if("E" %in% level) {
   purrr::map_df(states, ~{
@@ -130,7 +132,8 @@ get_parties_info <- function(level = NULL,
         id_orgao_partidario = as.character(id_orgao_partidario),
         numero = as.character(numero)
         )
-
+  
+    return(info_parties)
   })
   }
   if("M" %in% level) {
@@ -160,8 +163,9 @@ get_parties_info <- function(level = NULL,
         id_orgao_partidario = as.character(id_orgao_partidario),
         numero = as.character(numero)
         )
+
+    return(info_parties)
   })
     }
     
-  return(info_parties)
 }
