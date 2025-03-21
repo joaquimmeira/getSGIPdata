@@ -63,7 +63,7 @@ get_parties_info <- function(level = "F",
 #'
 #' @return A dataframe with party information.
 #' @keywords internal
-.fetch_parties_info <- function(states, inicio_vigencia, fim_vigencia) {
+.fetch_parties_info <- function(level, states, inicio_vigencia, fim_vigencia) {
   if(level == "F") {
   req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
          req_url_query(
