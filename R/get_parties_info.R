@@ -31,7 +31,7 @@
 #'  )
 #'
 #' }
-get_parties_info <- function(level = "F",
+get_parties_info <- function(level = NULL,
                              states = NULL,
                              ivigencia = NULL,
                              fvigencia = NULL) {
@@ -44,6 +44,8 @@ get_parties_info <- function(level = "F",
                                 default = Sys.Date(),
                                 is_start = FALSE,
                                 inicio_vigencia)
+
+  level <- ifelse(!level %in% c("F", "E", "M"), "F", level)
 
   states <- .validate_states(states)
   parties_info <- .fetch_parties_info(states,
