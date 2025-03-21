@@ -66,8 +66,8 @@ get_parties_info <- function(level = NULL,
 #' @return A dataframe with party information.
 #' @keywords internal
 .fetch_parties_info <- function(level, states, inicio_vigencia, fim_vigencia) {
-  ifelse(level == "F",
-  (req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
+  if("F" %in% level) {
+  req <- request("https://sgip3.tse.jus.br/sgip3-consulta/api/v1/orgaoPartidario/consulta") |>
          req_url_query(
            dataFimVigencia = fim_vigencia,
            dataInicioVigencia = inicio_vigencia,
@@ -89,9 +89,9 @@ get_parties_info <- function(level = NULL,
         )
 
     return(info_parties)
-  ),
-  ifelse(level == "E",
-  (purrr::map_df(states, ~{
+  }
+  if("E" %in% level) {
+  purrr::map_df(states, ~{
     Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
 
     ifelse(.x == "DF",
@@ -133,9 +133,9 @@ get_parties_info <- function(level = NULL,
 
     return(info_parties)
   })
-  ),
-
-  (purrr::map_df(states, ~{
+  }
+  if("M" %in% level) {
+  purrr::map_df(states, ~{
     Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
 
        # Resques for all states of Brasil
@@ -164,6 +164,6 @@ get_parties_info <- function(level = NULL,
 
     return(info_parties)
   })
-    )
-    ))
+    }
+    
 }
