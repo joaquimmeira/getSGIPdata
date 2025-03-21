@@ -89,7 +89,7 @@ get_parties_info <- function(level = NULL,
         )
 
     return(info_parties)
-  }
+  } else {
   if(level == "E") {
   purrr::map_df(states, ~{
     Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
@@ -133,7 +133,7 @@ get_parties_info <- function(level = NULL,
 
     return(info_parties)
   })
-    }
+    } else {
   if(level == "M") {
   purrr::map_df(states, ~{
     Sys.sleep(runif(1, 1, 3))  # Delay to avoid rate limits
@@ -165,4 +165,5 @@ get_parties_info <- function(level = NULL,
     return(info_parties)
   })
     }
+    }}
 }
